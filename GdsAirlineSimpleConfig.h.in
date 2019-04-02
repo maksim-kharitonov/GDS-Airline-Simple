@@ -1,0 +1,5 @@
+// GDS Modeling project settings
+#define GdsAirlineSimple_VERSION_MAJOR @GdsAirlineSimple_VERSION_MAJOR@
+#define GdsAirlineSimple_VERSION_MINOR @GdsAirlineSimple_VERSION_MINOR@
+#cmakedefine USE_MYGDS
+
