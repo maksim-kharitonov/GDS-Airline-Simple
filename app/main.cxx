@@ -1,10 +1,14 @@
 using namespace std;
 
 #include "AppExports.h"
-#include "GdsExports.h"
-#include "SirenaExports.h"
 
-void CallDLLByImplicitLinking(string s);
+#include <Windows.h>
+
+#include "GdsExports.h"
+
+typedef core::BaseGDS *(__cdecl *GdsFactory)();
+
+void CallDLLByExplicitLinking(string s, LPCSTR dllName);
 
 int main(int argc, char *argv[]) {
   clrscr();
@@ -22,10 +26,10 @@ int main(int argc, char *argv[]) {
     cout << endl;
     switch (ch) {
     case 1:
-      CallDLLByImplicitLinking("Hello");
+      CallDLLByExplicitLinking("Hello","sirena.dll");
       break;
     case 2:
-      cout << "case 2" << endl;
+      CallDLLByExplicitLinking("Hello","amadeus.dll");
       break;
     case 3:
       exit(0);
@@ -36,14 +40,30 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-void CallDLLByImplicitLinking(string s) {
-  cout << "==============================================================="
-       << endl;
-  core::BaseGDS *gds = new core::SirenaGDS();
-  cout << gds->Say(s) << endl;
+void CallDLLByExplicitLinking(string s, LPCSTR dllName) {
+  HMODULE dll = LoadLibrary(dllName);
+  if (!dll) {
+    cout << "Fail load library" << endl;
+    return;
+  }
 
-  delete gds;
+  GdsFactory factory =
+      reinterpret_cast<GdsFactory>(GetProcAddress(dll, "CreateGDS"));
 
-  cout << "==============================================================="
+  if (!factory) {
+    cerr << "Unable to load CreateGDS from DLL!\n";
+    FreeLibrary(dll);
+    return;
+  }
+
+  core::BaseGDS *instance = factory();
+  cout << instance->Say(s) << endl;
+
+  instance->Destroy();
+
+  FreeLibrary(dll);
+
+  cout << endl
+       << "==============================================================="
        << endl;
 }

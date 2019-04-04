@@ -1,5 +1,8 @@
 # Properties->C/C++->General->Additional Include Directories
-include_directories ("${PROJECT_SOURCE_DIR}/sirena")
+include_directories (
+    "${PROJECT_SOURCE_DIR}/sirena"
+    "${PROJECT_SOURCE_DIR}/amadeus"
+)
 
 # Set Properties->General->Configuration Type to Application(.exe)
 # Creates app.exe with the listed sources (main.cxx)
@@ -7,7 +10,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/sirena")
 add_executable (app main.cxx)
 
 # Properties->Linker->Input->Additional Dependencies
-target_link_libraries (app  sirena)
+target_link_libraries (app  sirena amadeus)
 
 # Creates a folder "executables" and adds target 
 # project (app.vcproj) under it

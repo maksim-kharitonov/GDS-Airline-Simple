@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8)
 
 # Maps to a solution file (GDS_Console.sln). The solution will 
 # have all targets (exe, lib, dll) as projects (.vcproj)
@@ -20,6 +20,7 @@ message ("cxx Flags: " ${CMAKE_CXX_FLAGS})
 # Sub-directories where more CMakeLists.txt exist
 add_subdirectory(app)
 add_subdirectory (sirena)
+add_subdirectory (amadeus)
 
 # Turn on CMake testing capabilities
 # enable_testing()
