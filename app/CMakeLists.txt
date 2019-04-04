@@ -1,5 +1,5 @@
 # Properties->C/C++->General->Additional Include Directories
-include_directories ("${PROJECT_SOURCE_DIR}/gds")
+include_directories ("${PROJECT_SOURCE_DIR}/sirena")
 
 # Set Properties->General->Configuration Type to Application(.exe)
 # Creates app.exe with the listed sources (main.cxx)
@@ -7,7 +7,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/gds")
 add_executable (app main.cxx)
 
 # Properties->Linker->Input->Additional Dependencies
-target_link_libraries (app  gds)
+target_link_libraries (app  sirena)
 
 # Creates a folder "executables" and adds target 
 # project (app.vcproj) under it
