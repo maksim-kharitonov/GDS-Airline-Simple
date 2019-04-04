@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.5)
 
 # Maps to a solution file (GDS_Console.sln). The solution will 
 # have all targets (exe, lib, dll) as projects (.vcproj)

@@ -2,14 +2,6 @@ using namespace std;
 
 #include "AppExports.h"
 
-#include <Windows.h>
-
-#include "GdsExports.h"
-
-typedef core::BaseGDS *(__cdecl *GdsFactory)();
-
-void CallDLLByExplicitLinking(string s, LPCSTR dllName);
-
 int main(int argc, char *argv[]) {
   clrscr();
   int ch;
@@ -18,6 +10,14 @@ int main(int argc, char *argv[]) {
   cout << "....... author: Kharitonov M.A.           .........." << endl;
   cout << "....... for MPGU univercity               .........." << endl;
   cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+
+  ConfigReader *config = new ConfigReader("./conf/config.ini");
+  cout << "----------- Available module list: -----------------" << endl;
+  map<string, string> gdsModules = config->getSection("GDS_MODULE_LIST");
+  for (auto it = gdsModules.cbegin(); it != gdsModules.cend(); ++it) {
+    cout << it->first << " " << it->second << endl;
+  }
+
   do {
     cout << "^^^^^^^^^^^^^^^^^^^^^^MAIN MENU^^^^^^^^^^^^^^^^^^^^" << endl;
     cout << "1.Admin mode\n2.User mode\n3.Exit\n";
@@ -26,10 +26,10 @@ int main(int argc, char *argv[]) {
     cout << endl;
     switch (ch) {
     case 1:
-      CallDLLByExplicitLinking("Hello","sirena.dll");
+      CallDLLByExplicitLinking("Hello", "sirena.dll");
       break;
     case 2:
-      CallDLLByExplicitLinking("Hello","amadeus.dll");
+      CallDLLByExplicitLinking("Hello", "amadeus.dll");
       break;
     case 3:
       exit(0);
@@ -37,6 +37,8 @@ int main(int argc, char *argv[]) {
   } while (ch <= 3);
 
   cin.get();
+
+  delete config;
   return 0;
 }
 

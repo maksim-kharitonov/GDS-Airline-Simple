@@ -10,13 +10,22 @@
 #define clrscr() system("clear");
 #endif // linux
 
-#include<stdio.h>
-#include<conio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<iostream>
-#include<time.h>
-#include<iomanip>
-#include<fstream>
+#include "ConfigReader.h"
+#include "GdsExports.h"
+#include <Windows.h>
+#include <conio.h>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string>
+#include <time.h>
+
+typedef core::BaseGDS *(__cdecl *GdsFactory)();
+
+void CallDLLByExplicitLinking(string s, LPCSTR dllName);
 
 #endif // AppExports_h
