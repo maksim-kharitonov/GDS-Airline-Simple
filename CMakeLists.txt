@@ -18,9 +18,10 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 message ("cxx Flags: " ${CMAKE_CXX_FLAGS})
 
 # Sub-directories where more CMakeLists.txt exist
-add_subdirectory(app)
+add_subdirectory (app)
 add_subdirectory (sirena)
 add_subdirectory (amadeus)
+
 
 # Turn on CMake testing capabilities
 # enable_testing()
