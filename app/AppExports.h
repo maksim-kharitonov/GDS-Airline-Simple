@@ -11,8 +11,11 @@
 #endif // linux
 
 #include "ConfigReader.h"
+#include "Command.h"
 #include "GdsExports.h"
+#include "Tools.h"
 #include <Windows.h>
+#include <algorithm>
 #include <conio.h>
 #include <fstream>
 #include <iomanip>
@@ -27,5 +30,6 @@
 typedef core::BaseGDS *(__cdecl *GdsFactory)();
 
 void CallDLLByExplicitLinking(string s, LPCSTR dllName);
+int executeCommand(Command &command);
 
 #endif // AppExports_h

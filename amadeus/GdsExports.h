@@ -7,7 +7,7 @@
 #define Amadeus_API __declspec(dllimport)
 #endif // Amadeus_API
 #else
-#define Sirena_API
+#define Amadeus_API
 #endif
 
 #include <string>
