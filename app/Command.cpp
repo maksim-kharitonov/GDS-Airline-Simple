@@ -88,6 +88,14 @@ Command *CommandFactory::CreateCommand(const string &cmdString) {
     return new ExitCommand(cmdString);
   } else if (command == "SAY") {
     return new SayCommand(cmdString);
+  } else if (command == "SEARCH") {
+    return new SearchCommand(cmdString);
+  } else if (command == "HOLD") {
+    return new HoldCommand(cmdString);
+  } else if (command == "BOOK") {
+    return new BookCommand(cmdString);
+  } else if (command == "TICKET") {
+    return new TicketCommand(cmdString);
   } else if (command == "MODULES") {
     return new ModuleCommad(cmdString);
   } else {
@@ -109,7 +117,7 @@ int SayCommand::execute() {
   } else {
     cout << _gdsModuleImplementations[gds]->Say(_paramString) << endl;
   }
-  
+
   return 0;
 }
 
@@ -118,6 +126,59 @@ int ModuleCommad::execute() {
   for (auto it = _gdsModulesStrings.cbegin(); it != _gdsModulesStrings.cend();
        ++it) {
     cout << it->first << " " << it->second << endl;
+  }
+  return 0;
+}
+
+int SearchCommand::execute() {
+  string gds = tools::lowercase_copy(_modifier);
+  if (gds == "") {
+    for (auto it = _gdsModuleImplementations.cbegin();
+         it != _gdsModuleImplementations.cend(); ++it) {
+      cout << it->second->Search(_paramString) << endl;
+    }
+  } else {
+    cout << _gdsModuleImplementations[gds]->Search(_paramString) << endl;
+  }
+
+  return 0;
+}
+
+int HoldCommand::execute() {
+  string gds = tools::lowercase_copy(_modifier);
+  if (gds == "") {
+    for (auto it = _gdsModuleImplementations.cbegin();
+         it != _gdsModuleImplementations.cend(); ++it) {
+      cout << it->second->Hold(_paramString) << endl;
+    }
+  } else {
+    cout << _gdsModuleImplementations[gds]->Hold(_paramString) << endl;
+  }
+  return 0;
+}
+
+int BookCommand::execute() {
+  string gds = tools::lowercase_copy(_modifier);
+  if (gds == "") {
+    for (auto it = _gdsModuleImplementations.cbegin();
+         it != _gdsModuleImplementations.cend(); ++it) {
+      cout << it->second->Book(_paramString) << endl;
+    }
+  } else {
+    cout << _gdsModuleImplementations[gds]->Book(_paramString) << endl;
+  }
+  return 0;
+}
+
+int TicketCommand::execute() {
+  string gds = tools::lowercase_copy(_modifier);
+  if (gds == "") {
+    for (auto it = _gdsModuleImplementations.cbegin();
+         it != _gdsModuleImplementations.cend(); ++it) {
+      cout << it->second->Ticket(_paramString) << endl;
+    }
+  } else {
+    cout << _gdsModuleImplementations[gds]->Ticket(_paramString) << endl;
   }
   return 0;
 }

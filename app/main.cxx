@@ -13,7 +13,9 @@ int main(int argc, char *argv[]) {
   for (string command; cout << "GDS > " && getline(cin, command);) {
     if (!command.empty()) {
       try {
-        int res = CommandFactory::CreateCommand(command)->execute();
+        Command *cmd = CommandFactory::CreateCommand(command);
+        int res = cmd->execute();
+        delete cmd;
         switch (res) {
           case 0:
             // normal result

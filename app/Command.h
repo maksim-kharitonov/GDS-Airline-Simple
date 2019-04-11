@@ -66,6 +66,30 @@ class SayCommand : public Command {
   int execute();
 };
 
+class SearchCommand : public Command {
+ public:
+  SearchCommand(const string &cmdString) : Command(cmdString) {}
+  int execute();
+};
+
+class HoldCommand : public Command {
+ public:
+  HoldCommand(const string &cmdString) : Command(cmdString) {}
+  int execute();
+};
+
+class BookCommand : public Command {
+ public:
+  BookCommand(const string &cmdString) : Command(cmdString) {}
+  int execute();
+};
+
+class TicketCommand : public Command {
+ public:
+  TicketCommand(const string &cmdString) : Command(cmdString) {}
+  int execute();
+};
+
 class UnknownCommand : public Command {
  public:
   UnknownCommand(const string &cmdString) : Command(cmdString) {}
