@@ -8,9 +8,16 @@ using namespace std;
 #include <regex>
 #include <string>
 #include <vector>
+#include <map>
+#include "Gds.h"
+#include "ConfigReader.h"
+
 
 class Command {
-public:
+ public:
+  static void destroy();
+  static string getCommandCode(const string &cmdString);
+
   Command();
   Command(const string &cmdString);
   ~Command();
@@ -18,20 +25,56 @@ public:
   string getCommandCode();
   string getParamString();
   string getModifier();
+  virtual int execute() = 0;
 
-private:
+ protected:
   string _gdsCode;
   string _cmdCode;
   string _paramString;
   string _modifier;
+
+  static map<string, string> _gdsModulesStrings;
+  static map<string, Gds *> _gdsModuleImplementations;
+  static ConfigReader *_config;
 };
 
 class CommandException : public exception {
-public:
-  CommandException(const char *msg, const char *code) : exception(msg),_code(code) {}
+ public:
+  CommandException(const char *msg, const char *code)
+      : exception(msg), _code(code) {}
   const char *getCode();
-private:
-  const char* _code;
+
+ private:
+  const char *_code;
 };
 
-#endif // !COMMAND_H
+class ExitCommand : public Command {
+ public:
+  ExitCommand(const string &cmdString) : Command(cmdString) {}
+  int execute();
+};
+
+class ModuleCommad : public Command {
+ public:
+  ModuleCommad(const string &cmdString) : Command(cmdString) {}
+  int execute();
+};
+
+class SayCommand : public Command {
+ public:
+  SayCommand(const string &cmdString) : Command(cmdString) {}
+  int execute();
+};
+
+class UnknownCommand : public Command {
+ public:
+  UnknownCommand(const string &cmdString) : Command(cmdString) {}
+  int execute();
+};
+
+class CommandFactory {
+ public:
+  static Command *CreateCommand(const string &cmdString);
+};
+
+#endif  // !COMMAND_H

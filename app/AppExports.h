@@ -13,6 +13,8 @@
 #include "ConfigReader.h"
 #include "Command.h"
 #include "GdsExports.h"
+#include "GdsFactory.h"
+#include "Gds.h"
 #include "Tools.h"
 #include <Windows.h>
 #include <algorithm>
@@ -26,8 +28,6 @@
 #include <string.h>
 #include <string>
 #include <time.h>
-
-typedef core::BaseGDS *(__cdecl *GdsFactory)();
 
 void CallDLLByExplicitLinking(string s, LPCSTR dllName);
 int executeCommand(Command &command);

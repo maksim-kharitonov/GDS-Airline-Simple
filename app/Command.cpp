@@ -1,13 +1,47 @@
 #include "Command.h"
-#include "Tools.h"
 #include <algorithm>
 #include <functional>
 #include <locale>
+#include "Tools.h"
 using namespace std;
 
-Command::Command() {}
+string Command::getCommandCode(const string &cmdString) {
+  smatch sm;
+  regex expr("^[\\t ]*(\\w+)");
+  bool found = regex_search(cmdString, sm, expr);
+  if (found) {
+    return tools::uppercase_copy(sm.str(1));
+  } else {
+    throw CommandException(
+        "Command format: <CMD_CODE> <CMD_PARAMS> \\ <CMD_MODIFIER>",
+        "format_exception");
+  }
+}
 
-Command::Command(const string &cmdString) {
+void Command::destroy() {
+  delete _config;
+  for (auto it = _gdsModuleImplementations.cbegin();
+       it != _gdsModuleImplementations.cend(); ++it) {
+    delete (it->second);
+  }
+}
+
+map<string, string> Command::_gdsModulesStrings;
+map<string, Gds *> Command::_gdsModuleImplementations;
+ConfigReader *Command::_config;
+
+Command::Command() {
+  if (_gdsModulesStrings.empty()) {
+    _config = new ConfigReader("./conf/config.ini");
+    _gdsModulesStrings = _config->getSection("GDS_MODULE_LIST");
+    for (auto it = _gdsModulesStrings.cbegin(); it != _gdsModulesStrings.cend();
+         ++it) {
+      _gdsModuleImplementations[it->first] = new Gds(it->second.c_str());
+    }
+  }
+}
+
+Command::Command(const string &cmdString) : Command() {
   try {
     regex expr("^[\\t ]*(\\w+)(?:[\\t ]+([\\w ]*))?(?:\\\\(.*))?$",
                regex_constants::icase);
@@ -18,7 +52,7 @@ Command::Command(const string &cmdString) {
             "Command format: <CMD_CODE> <CMD_PARAMS> \\ <CMD_MODIFIER>",
             "format_exception");
       _cmdCode = tools::uppercase_copy((*it)[1]);
-      
+
       if ((*it)[2] != "") {
         _paramString = tools::trim_copy((*it)[2]);
       }
@@ -48,3 +82,42 @@ string Command::getModifier() { return _modifier; }
 
 const char *CommandException::getCode() { return _code; }
 
+Command *CommandFactory::CreateCommand(const string &cmdString) {
+  string command = Command::getCommandCode(cmdString);
+  if (command == "EXIT") {
+    return new ExitCommand(cmdString);
+  } else if (command == "SAY") {
+    return new SayCommand(cmdString);
+  } else if (command == "MODULES") {
+    return new ModuleCommad(cmdString);
+  } else {
+    return new UnknownCommand(cmdString);
+  }
+}
+
+int ExitCommand::execute() { return 1; }
+
+int UnknownCommand::execute() { return 2; }
+
+int SayCommand::execute() {
+  string gds = tools::lowercase_copy(_modifier);
+  if (gds == "") {
+    for (auto it = _gdsModuleImplementations.cbegin();
+         it != _gdsModuleImplementations.cend(); ++it) {
+      cout << it->second->Say(_paramString) << endl;
+    }
+  } else {
+    cout << _gdsModuleImplementations[gds]->Say(_paramString) << endl;
+  }
+  
+  return 0;
+}
+
+int ModuleCommad::execute() {
+  cout << "----------- Available module list: -----------------" << endl;
+  for (auto it = _gdsModulesStrings.cbegin(); it != _gdsModulesStrings.cend();
+       ++it) {
+    cout << it->first << " " << it->second << endl;
+  }
+  return 0;
+}
