@@ -6,13 +6,12 @@ file (GLOB GDS_SOURCES
 # Empty name lists them directly under the .vcproj
 source_group("" FILES ${GDS_SOURCES})
 
-# Properties->C/C++->General->Additional Include Directories
-include_directories (.)
-
 # Set Properties->General->Configuration Type to Dynamic Library(.dll)
-# Creates gds.dll with the listed sources collected in the variables
+# Creates amadeus.dll with the listed sources collected in the variables
 # Also adds sources to the Solution Explorer
 add_library(amadeus SHARED ${GDS_SOURCES})
+
+target_link_libraries(amadeus ws2_32)
 
 # Creates a folder "libraries" and adds target project (gds.vcproj) under it
 set_property(TARGET amadeus PROPERTY FOLDER "libraries")

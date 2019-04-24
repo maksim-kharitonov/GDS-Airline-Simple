@@ -3,6 +3,7 @@
 #include <functional>
 #include <locale>
 #include "Tools.h"
+#include "Colors.h"
 using namespace std;
 
 string Command::getCommandCode(const string &cmdString) {
@@ -98,6 +99,8 @@ Command *CommandFactory::CreateCommand(const string &cmdString) {
     return new TicketCommand(cmdString);
   } else if (command == "MODULES") {
     return new ModuleCommad(cmdString);
+  } else if (command == "HELP") {
+    return new HelpCommand(cmdString);
   } else {
     return new UnknownCommand(cmdString);
   }
@@ -180,5 +183,22 @@ int TicketCommand::execute() {
   } else {
     cout << _gdsModuleImplementations[gds]->Ticket(_paramString) << endl;
   }
+  return 0;
+}
+
+int HelpCommand::execute() {
+  cout << "-----------------------------" << endl;
+  cout << BOLD(FMAG("Command syntax: ")) << endl;
+  cout << "-----------------------------" << endl;
+  cout << "Command format: <CMD_CODE> <CMD_PARAMS> \\ <CMD_MODIFIER>" << endl;
+  cout << "List of available commands:" << endl;
+  cout << "-----------------------------" << endl;
+  cout << BOLD(FGRN("SEARCH")) << endl;
+  cout << "-----------------------------" << endl;
+  cout << "find available flights using specified options" << endl;
+  cout << "-----------------------------" << endl;
+  cout << BOLD(FGRN("EXIT")) << endl;
+  cout << "-----------------------------" << endl;
+  cout << "exit programm without saving result" << endl;
   return 0;
 }

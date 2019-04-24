@@ -90,6 +90,12 @@ class TicketCommand : public Command {
   int execute();
 };
 
+class HelpCommand : public Command {
+ public:
+  HelpCommand(const string &cmdString) : Command(cmdString) {}
+  int execute();
+};
+
 class UnknownCommand : public Command {
  public:
   UnknownCommand(const string &cmdString) : Command(cmdString) {}
