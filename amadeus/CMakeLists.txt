@@ -1,6 +1,13 @@
 file (GLOB GDS_SOURCES
 	  "*.h"
-      "*.cpp")
+      "*.cpp"
+	  "../lib/*.h"
+	  "../lib/*.cpp")
+	  
+include_directories (
+.
+"${PROJECT_SOURCE_DIR}/lib"
+)
 
 # Create named folders for the sources within the .vcproj
 # Empty name lists them directly under the .vcproj

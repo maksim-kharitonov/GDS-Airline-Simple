@@ -1,6 +1,10 @@
 #pragma once
 #include "AmadeusHttpClient.h"
 #include "GdsExports.h"
+#include "tinyxml.h"
+#include <iostream>
+#include <sstream>
+#include "FlightOffer.h"
 
 using namespace std;
 
