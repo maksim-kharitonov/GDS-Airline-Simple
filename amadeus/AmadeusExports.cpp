@@ -1,7 +1,7 @@
 #include "AmadeusExports.h"
 //прописал, чтобы Visual Studio не ругалась
-#include "../lib/tinyxml.h"
 #include "../lib/Colors.h"
+#include "../lib/tinyxml.h"
 
 namespace core {
 AmadeusGDS::AmadeusGDS(map<string, string> _param) : BaseGDS(_param) {
@@ -93,9 +93,9 @@ list<FlightOffer> AmadeusGDS::Search(string &searchString) {
             }
           }
 
-		  offerBuilder.addFlight(odBuilder.build());
+          offerBuilder.addFlight(odBuilder.build());
 
-		  flight = flight->NextSiblingElement("flight");
+          flight = flight->NextSiblingElement("flight");
         }
 
         FlightOffer offer = offerBuilder.build();
@@ -123,17 +123,30 @@ Reservation *AmadeusGDS::Book() {
   if (_holdedOffer) {
     Reservation *resPtr = dynamic_cast<Reservation *>(_holdedOffer);
     if (resPtr != nullptr) {
-      cerr << BOLD(FRED("Already has reservation in status ")) << resPtr->status << endl;
+      cerr << BOLD(FRED("Already has reservation in status ")) << resPtr->status
+           << endl;
       return resPtr;
     } else {
       string request = "/book?id=" + _holdedOffer->uuid;
-      string result = _httpClient->get(request);
+      string response = _httpClient->get(request);
 
-      Reservation *rs = new Reservation(*_holdedOffer);
-      rs->pnr = "AABBCC";
-      rs->status = "BOOKED";
-      _holdedOffer = rs;
-      return rs;
+      TiXmlDocument doc;
+      doc.Parse((const char *)response.c_str(), 0, TIXML_ENCODING_UTF8);
+
+      TiXmlElement *rootElement = doc.RootElement();
+
+      if (NULL != rootElement) {
+        TiXmlElement *pnr =
+            rootElement->FirstChildElement()->FirstChildElement("pnr");
+        if (NULL != pnr) {
+          Reservation *rs = new Reservation(*_holdedOffer);
+          rs->pnr = pnr->GetText();
+          rs->status = pnr->Attribute("status");
+          _holdedOffer = rs;
+          return rs;
+        }
+      }
+      return NULL;
     }
   } else {
     return NULL;
@@ -159,12 +172,33 @@ Reservation *AmadeusGDS::Ticket(string &pnr) {
       cerr << BOLD(FRED("Offer is not booked")) << endl;
       return NULL;
     } else {
-      string request = "/ticket";
-      string result = _httpClient->get(request);
+      string request = "/ticket?pnr=" + resPtr->pnr;
+      string response = _httpClient->get(request);
 
-      resPtr->tickets["1234567890"] = "OK";
-      resPtr->status = "TKT";
-      return resPtr;
+      TiXmlDocument doc;
+      doc.Parse((const char *)response.c_str(), 0, TIXML_ENCODING_UTF8);
+
+      TiXmlElement *rootElement = doc.RootElement();
+
+      if (NULL != rootElement) {
+        TiXmlElement *pnr =
+            rootElement->FirstChildElement()->FirstChildElement("pnr");
+        if (NULL != pnr) {
+          resPtr->status = pnr->Attribute("status");
+        }
+
+        TiXmlElement *tickets =
+            rootElement->FirstChildElement()->FirstChildElement("tickets");
+        if (NULL != tickets) {
+          TiXmlElement *ticket = tickets->FirstChildElement("ticket");
+          while (NULL != ticket) {
+            resPtr->tickets[ticket->GetText()] = ticket->Attribute("status");
+            ticket = ticket->NextSiblingElement("ticket");
+          }
+        }
+        return resPtr;
+      }
+      return NULL;
     }
   } else {
     return NULL;
