@@ -36,6 +36,8 @@ class Command {
   static map<string, string> _gdsModulesStrings;
   static map<string, Gds *> _gdsModuleImplementations;
   static ConfigReader *_config;
+
+  static FlightOffer* _holdedOffer; // Выбранный вариант перелета
 };
 
 class CommandException : public exception {

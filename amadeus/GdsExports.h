@@ -27,8 +27,8 @@ class BaseGDS {
 
   virtual string Say(string &s) = 0;
   virtual list<FlightOffer> Search(string &searchString) = 0;
-  virtual string Hold(string &offerId) = 0;
-  virtual string Book(string &offerId) = 0;
-  virtual string Ticket(string &pnr) = 0;
+  virtual FlightOffer *Hold(string &offerId) = 0;
+  virtual Reservation *Book() = 0;
+  virtual Reservation *Ticket(string &pnr) = 0;
 };
 } // namespace core

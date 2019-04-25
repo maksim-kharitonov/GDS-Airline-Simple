@@ -1,6 +1,6 @@
 #include "Gds.h"
 
-Gds::Gds(LPCSTR dllName, map<string,string> param) : BaseGDS(param) {
+Gds::Gds(LPCSTR dllName, map<string, string> param) : BaseGDS(param) {
   _dll = LoadLibrary(dllName);
   GdsFactory factory =
       reinterpret_cast<GdsFactory>(GetProcAddress(_dll, "CreateGDS"));
@@ -23,8 +23,11 @@ list<FlightOffer> Gds::Search(string& searchString) {
   return _instance->Search(searchString);
 }
 
-string Gds::Hold(string& offerId) { return _instance->Hold(offerId); }
+FlightOffer* Gds::Hold(string& offerId) { return _instance->Hold(offerId); }
 
-string Gds::Book(string& offerId) { return _instance->Book(offerId); }
+Reservation* Gds::Book() {
+  Reservation* result = _instance->Book();
+  return result;
+}
 
-string Gds::Ticket(string& pnr) { return _instance->Ticket(pnr); }
+Reservation* Gds::Ticket(string& pnr) { return _instance->Ticket(pnr); }

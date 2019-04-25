@@ -17,13 +17,16 @@ class Amadeus_API AmadeusGDS : public BaseGDS {
 
   string Say(string &s);
   list<FlightOffer> Search(string &searchString);
-  string Hold(string &offerId);
-  string Book(string &offerId);
-  string Ticket(string &pnr);
+  FlightOffer *Hold(string &offerId);
+  Reservation *Book();
+  Reservation *Ticket(string &pnr);
 
  private:
   AmadeusHttpClient *_httpClient;
   static string searchFlights(string &s);
   static SOCKET OpenConnection(const char *hostname, int port);
+
+  static map<string, FlightOffer> _searchResult;  // Результаты последнего поиска
+  static FlightOffer *_holdedOffer;  // Выбранный вариант перелета
 };
 }  // namespace core

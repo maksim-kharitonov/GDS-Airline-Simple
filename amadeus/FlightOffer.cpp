@@ -1,7 +1,15 @@
 #include "FlightOffer.h"
 
-std::ostream &__cdecl operator << (std::ostream & stream, const FlightOffer &offer) {
-  stream << offer.uuid << " " << offer.generalCarrier << endl;
+std::ostream &operator<<(ostream &stream, const Reservation &reservation) {
+  stream << "PNR: " << reservation.pnr << " " << reservation.status << endl;
+  stream << static_cast<const FlightOffer &>(reservation) << endl;
+  return stream;
+}
+
+std::ostream &__cdecl operator<<(std::ostream &stream,
+                                 const FlightOffer &offer) {
+  stream << offer.gds << " " << offer.uuid << " " << offer.generalCarrier
+         << endl;
 
   for (std::vector<FlightOffer::OriginDestination>::const_iterator flight =
            offer.flights.begin();
@@ -15,16 +23,13 @@ std::ostream &__cdecl operator << (std::ostream & stream, const FlightOffer &off
   return stream;
 }
 
-std::ostream &__cdecl operator
-    << (std::ostream & stream,
-                         const FlightOffer::Price &price) {
+std::ostream &__cdecl operator<<(std::ostream &stream,
+                                 const FlightOffer::Price &price) {
   return stream << price.amount << " " << price.currency;
 }
 
-std::ostream &__cdecl operator
-    << (
-    ostream &stream,
-                    const FlightOffer::OriginDestination &originDestination) {
+std::ostream &__cdecl operator<<(
+    ostream &stream, const FlightOffer::OriginDestination &originDestination) {
   return stream << originDestination.marketingCarrier << " "
                 << originDestination.departurePort << " "
                 << "[" << originDestination.departureTime << "]"
@@ -32,6 +37,11 @@ std::ostream &__cdecl operator
                 << originDestination.arrivalTime << "]"
                 << " " << originDestination.bookingClass << " "
                 << originDestination.basicFareCode;
+}
+
+FlightOffer::Builder &FlightOffer::Builder::setGds(const string &gds) {
+  this->gds = gds;
+  return *this;
 }
 
 FlightOffer::Builder &FlightOffer::Builder::setUuid(const string &uuid) {
@@ -69,7 +79,7 @@ FlightOffer::Builder &FlightOffer::Builder::addFlight(
 }
 
 FlightOffer FlightOffer::Builder::build() {
-  return FlightOffer(uuid, generalCarrier, totalPrice, flights);
+  return FlightOffer(gds, uuid, generalCarrier, totalPrice, flights);
 }
 
 FlightOffer::OriginDestination
@@ -141,9 +151,8 @@ FlightOffer::OriginDestination::Builder::setBasicFareCode(
   return *this;
 }
 
-string FlightOffer::toString() { 
-	ostringstream out;
-	out << this;
-    return out.str();
+string FlightOffer::toString() {
+  ostringstream out;
+  out << this;
+  return out.str();
 }
-

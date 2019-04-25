@@ -16,6 +16,9 @@ string AmadeusGDS::Say(string &s) {
 }
 
 list<FlightOffer> AmadeusGDS::Search(string &searchString) {
+  _searchResult.clear();
+  delete _holdedOffer;
+
   list<FlightOffer> result;
   string request = "/search";
   string response = _httpClient->get(request);
@@ -32,8 +35,9 @@ list<FlightOffer> AmadeusGDS::Search(string &searchString) {
     if (NULL != pricingRoute) {
       TiXmlElement *variant = pricingRoute->FirstChildElement("variant");
       while (variant) {
-        FlightOffer::Builder offerBuilder =
-            FlightOffer::Builder().setUuid(std::to_string(++i));
+        FlightOffer::Builder offerBuilder = FlightOffer::Builder()
+                                                .setUuid(std::to_string(++i))
+                                                .setGds("AMADEUS");
         const char *generalCarrier = variant->Attribute("seance");
         if (generalCarrier) {
           offerBuilder.setGeneralCarrier(generalCarrier);
@@ -95,6 +99,7 @@ list<FlightOffer> AmadeusGDS::Search(string &searchString) {
 
         FlightOffer offer = offerBuilder.build();
         result.push_back(offer);
+        _searchResult[offer.uuid] = offer;
 
         variant = variant->NextSiblingElement("variant");
       }
@@ -104,22 +109,34 @@ list<FlightOffer> AmadeusGDS::Search(string &searchString) {
   return result;
 }
 
-string AmadeusGDS::Hold(string &offerId) {
-  string request = "/hold";
-  string result = _httpClient->get(request);
-  return result;
+FlightOffer *AmadeusGDS::Hold(string &offerId) {
+  if (_searchResult.find(offerId) != _searchResult.end()) {
+    _holdedOffer = &_searchResult[offerId];
+    return &_searchResult[offerId];
+  } else {
+    return NULL;
+  }
 }
 
-string AmadeusGDS::Book(string &offerId) {
-  string request = "/book";
-  string result = _httpClient->get(request);
-  return result;
+Reservation *AmadeusGDS::Book() {
+  if (_holdedOffer) {
+    string request = "/book?id=" + _holdedOffer->uuid;
+    string result = _httpClient->get(request);
+    Reservation *rs = new Reservation(*_holdedOffer, "AABBCC","BOOKED");
+    _holdedOffer = rs;
+    return rs;
+  } else {
+    return NULL;
+  }
 }
 
-string AmadeusGDS::Ticket(string &pnr) {
+Reservation *AmadeusGDS::Ticket(string &pnr) {
   string request = "/ticket";
   string result = _httpClient->get(request);
-  return result;
+  return NULL;
 }
+
+map<string, FlightOffer> AmadeusGDS::_searchResult;
+FlightOffer *AmadeusGDS::_holdedOffer;
 
 }  // namespace core

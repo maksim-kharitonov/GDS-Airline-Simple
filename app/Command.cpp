@@ -2,9 +2,11 @@
 #include <algorithm>
 #include <functional>
 #include <locale>
-#include "Tools.h"
 #include "Colors.h"
+#include "Tools.h"
 using namespace std;
+
+FlightOffer *Command::_holdedOffer;
 
 string Command::getCommandCode(const string &cmdString) {
   smatch sm;
@@ -37,10 +39,11 @@ Command::Command() {
     _gdsModulesStrings = _config->getSection("GDS_MODULE_LIST");
     for (auto it = _gdsModulesStrings.cbegin(); it != _gdsModulesStrings.cend();
          ++it) {
-      string moduleName = it->first;
+      string moduleName = tools::uppercase_copy(it->first);
       string moduleDll = it->second;
       _gdsModuleImplementations[moduleName] =
-          new Gds(moduleDll.c_str(), _config->getSection(tools::uppercase_copy(moduleName)));
+          new Gds(moduleDll.c_str(),
+                  _config->getSection(tools::uppercase_copy(moduleName)));
     }
   }
 }
@@ -114,7 +117,7 @@ int ExitCommand::execute() { return 1; }
 int UnknownCommand::execute() { return 2; }
 
 int SayCommand::execute() {
-  string gds = tools::lowercase_copy(_modifier);
+  string gds = tools::uppercase_copy(_modifier);
   if (gds == "") {
     for (auto it = _gdsModuleImplementations.cbegin();
          it != _gdsModuleImplementations.cend(); ++it) {
@@ -137,7 +140,8 @@ int ModuleCommad::execute() {
 }
 
 int SearchCommand::execute() {
-  string gds = tools::lowercase_copy(_modifier);
+  _holdedOffer = NULL;
+  string gds = tools::uppercase_copy(_modifier);
   if (gds == "") {
     for (auto it = _gdsModuleImplementations.cbegin();
          it != _gdsModuleImplementations.cend(); ++it) {
@@ -160,33 +164,47 @@ int SearchCommand::execute() {
 }
 
 int HoldCommand::execute() {
-  string gds = tools::lowercase_copy(_modifier);
+  string gds = tools::uppercase_copy(_modifier);
   if (gds == "") {
-    for (auto it = _gdsModuleImplementations.cbegin();
-         it != _gdsModuleImplementations.cend(); ++it) {
-      cout << it->second->Hold(_paramString) << endl;
-    }
+    throw CommandException("Add GDS modifier: HOLD <UUID> \\ <GDS>",
+                           "format_exception");
   } else {
-    cout << _gdsModuleImplementations[gds]->Hold(_paramString) << endl;
+    FlightOffer *offer = _gdsModuleImplementations[gds]->Hold(_paramString);
+    if (offer) {
+      _holdedOffer = offer;
+      cout << BOLD(FGRN("Offer hold: SUCCESS")) << endl
+           << "------------------------" << endl;
+      cout << *_holdedOffer << endl;
+    } else {
+      throw CommandException("Selected offer not found", "Data exception");
+    }
   }
   return 0;
 }
 
 int BookCommand::execute() {
-  string gds = tools::lowercase_copy(_modifier);
-  if (gds == "") {
-    for (auto it = _gdsModuleImplementations.cbegin();
-         it != _gdsModuleImplementations.cend(); ++it) {
-      cout << it->second->Book(_paramString) << endl;
-    }
+  if (_modifier != "" || _paramString != "") {
+    throw CommandException("Command format: BOOK", "format_exception");
+  } else if (!_holdedOffer) {
+    throw CommandException("Holded offer not found; please hold first",
+                           "Data exception");
   } else {
-    cout << _gdsModuleImplementations[gds]->Book(_paramString) << endl;
+    Reservation *reservation =
+        _gdsModuleImplementations[_holdedOffer->gds]->Book();
+    if (reservation) {
+      //_holdedOffer = reservation;
+      cout << BOLD(FGRN("Offer book: SUCCESS")) << endl
+           << "------------------------" << endl;
+      cout << *reservation << endl;
+    } else {
+      throw CommandException("Booking command exception. Hold offer again or try later", "Data exception");
+    }
   }
   return 0;
 }
 
 int TicketCommand::execute() {
-  string gds = tools::lowercase_copy(_modifier);
+  string gds = tools::uppercase_copy(_modifier);
   if (gds == "") {
     for (auto it = _gdsModuleImplementations.cbegin();
          it != _gdsModuleImplementations.cend(); ++it) {

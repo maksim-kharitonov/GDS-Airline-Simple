@@ -16,6 +16,8 @@ using namespace std;
 
 struct FlightOffer {
  public:
+  FlightOffer(){};
+  //FlightOffer(FlightOffer const &src);
   class Builder;
   struct Price {
     double amount;
@@ -50,6 +52,7 @@ struct FlightOffer {
 
     class Builder;
   };
+  string gds;
   string uuid;
   string generalCarrier;
   Price totalPrice;
@@ -57,9 +60,10 @@ struct FlightOffer {
 
   string toString();
 
-  FlightOffer(const string uuid, const string generalCarrier,
+  FlightOffer(const string gds, const string uuid, const string generalCarrier,
               const Price totalPrice, const vector<OriginDestination> flights)
-      : uuid(uuid),
+      : gds(gds),
+        uuid(uuid),
         generalCarrier(generalCarrier),
         totalPrice(totalPrice),
         flights(flights){};
@@ -67,14 +71,21 @@ struct FlightOffer {
 
 class FlightOffer::Builder {
  private:
+  string gds;
   string uuid;
   string generalCarrier;
   Price totalPrice;
   vector<OriginDestination> flights;
 
  public:
-  Builder() : uuid("---"), generalCarrier("---"), totalPrice(), flights() {}
+  Builder()
+      : gds("---"),
+        uuid("---"),
+        generalCarrier("---"),
+        totalPrice(),
+        flights() {}
 
+  Builder &setGds(const string &gds);
   Builder &setUuid(const string &uuid);
   Builder &setGeneralCarrier(const string &generalCarrier);
   Builder &setPrice(const string &price);
@@ -123,11 +134,20 @@ class FlightOffer::OriginDestination::Builder {
   FlightOffer::OriginDestination build();
 };
 
-FLIGHT_OFFER_API ostream &operator<<(
-    ostream &stream, const FlightOffer &flightOffer);
-ostream & operator<<(
-    ostream &stream, const FlightOffer::OriginDestination &originDestination);
-ostream & operator<<(
-    ostream &stream, const FlightOffer::Price &price);
+FLIGHT_OFFER_API ostream &operator<<(ostream &stream,
+                                     const FlightOffer &flightOffer);
+ostream &operator<<(ostream &stream,
+                    const FlightOffer::OriginDestination &originDestination);
+ostream &operator<<(ostream &stream, const FlightOffer::Price &price);
+
+struct Reservation : public FlightOffer {
+  string pnr;
+  string status;
+  Reservation(FlightOffer const &offer, const string &pnr, const string &status)
+      : FlightOffer(offer), pnr(pnr), status(status){};
+};
+
+FLIGHT_OFFER_API ostream &operator<<(ostream &stream,
+                                     const Reservation &reservation);
 
 #endif  // !FLIGHTOFFER_H

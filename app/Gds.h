@@ -14,9 +14,9 @@ class Gds : public core::BaseGDS {
 
   string Say(string& s);
   list<FlightOffer> Search(string& searchString);
-  string Hold(string& offerId);
-  string Book(string& offerId);
-  string Ticket(string& pnr);
+  FlightOffer* Hold(string& offerId);
+  Reservation* Book();
+  Reservation* Ticket(string& pnr);
 
  private:
   HMODULE _dll;
