@@ -1,7 +1,7 @@
 #include "SirenaExports.h"
 
 namespace core {
-SirenaGDS::SirenaGDS() {}
+SirenaGDS::SirenaGDS(map<string,string> _param): BaseGDS(_param) {}
 SirenaGDS::~SirenaGDS() {}
 
 string SirenaGDS::Say(string &s) {
@@ -9,8 +9,8 @@ string SirenaGDS::Say(string &s) {
   return result;
 }
 
-string SirenaGDS::Search(string &searchString) {
-  string result = "Calling SirenaGDS search " + searchString;
+list<FlightOffer> SirenaGDS::Search(string &searchString) {
+  list<FlightOffer> result;
   return result;
 }
 

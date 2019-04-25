@@ -1,6 +1,7 @@
 #include "FlightOffer.h"
 
-std::ostream &__cdecl operator << (std::ostream & stream, const FlightOffer &offer) {
+std::ostream &__cdecl operator<<(std::ostream &stream,
+                                 const FlightOffer &offer) {
   stream << offer.uuid << " " << offer.generalCarrier << endl;
 
   for (std::vector<FlightOffer::OriginDestination>::const_iterator flight =
@@ -21,8 +22,7 @@ std::ostream &__cdecl operator
   return stream << price.amount << " " << price.currency;
 }
 
-std::ostream &__cdecl operator
-    << (
+ostream &__cdecl operator<<(
     ostream &stream,
                     const FlightOffer::OriginDestination &originDestination) {
   return stream << originDestination.marketingCarrier << " "
@@ -141,9 +141,8 @@ FlightOffer::OriginDestination::Builder::setBasicFareCode(
   return *this;
 }
 
-string FlightOffer::toString() { 
-	ostringstream out;
-	out << this;
-    return out.str();
+string FlightOffer::toString() {
+  ostringstream out;
+  out << this;
+  return out.str();
 }
-

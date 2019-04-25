@@ -8,7 +8,7 @@ AmadeusHttpClient::AmadeusHttpClient() {
   }
 }
 
-AmadeusHttpClient::AmadeusHttpClient(char* hostname, int port)
+AmadeusHttpClient::AmadeusHttpClient(string hostname, int port)
     : AmadeusHttpClient() {
   _hostname = hostname;
   _port = port;
@@ -43,7 +43,7 @@ string AmadeusHttpClient::get(string& request) {
   long totalBytesRead, thisReadSize, headerLen;
 
   ///////////// step 1, connect //////////////////////
-  _socket = OpenConnection(_hostname, _port);
+  _socket = OpenConnection(_hostname.c_str(), _port);
 
   ///////////// step 2, send GET request /////////////
   sprintf(tmpBuffer, "GET %s HTTP/1.0", request.c_str());

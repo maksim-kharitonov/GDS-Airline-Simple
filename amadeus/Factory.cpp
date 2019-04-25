@@ -1,4 +1,6 @@
 #include "Factory.h"
 #include "AmadeusExports.h"
 
-core::BaseGDS *CreateGDS() { return new core::AmadeusGDS(); }
+core::BaseGDS *CreateGDS(map<string, string> _param) {
+  return new core::AmadeusGDS(_param);
+}

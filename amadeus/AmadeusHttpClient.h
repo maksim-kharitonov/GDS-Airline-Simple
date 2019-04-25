@@ -15,13 +15,13 @@ using namespace std;
 
 class AmadeusHttpClient {
  public:
-  AmadeusHttpClient(char *hostname, int port);
+  AmadeusHttpClient(string hostname, int port);
   ~AmadeusHttpClient();
   string get(string &request);
   string post(string &request, string &data);
  private:
   SOCKET _socket;
-  char *_hostname;
+  string _hostname;
   int _port;
   AmadeusHttpClient();
   static int getHeaderLength(char *content);

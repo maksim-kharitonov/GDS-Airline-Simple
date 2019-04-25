@@ -12,11 +12,11 @@ namespace core {
 // MS Visual C++ compiler emits C4275 warning about not exported base class.
 class Amadeus_API AmadeusGDS : public BaseGDS {
  public:
-  AmadeusGDS();
+  AmadeusGDS(map<string,string> _param);
   virtual ~AmadeusGDS();
 
   string Say(string &s);
-  string Search(string &searchString);
+  list<FlightOffer> Search(string &searchString);
   string Hold(string &offerId);
   string Book(string &offerId);
   string Ticket(string &pnr);

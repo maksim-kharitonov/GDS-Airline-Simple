@@ -8,4 +8,4 @@
 
 using namespace std;
 
-CEXTERN Sirena_API core::BaseGDS *__cdecl CreateGDS();
+CEXTERN Sirena_API core::BaseGDS *__cdecl CreateGDS(map<string,string> _param);

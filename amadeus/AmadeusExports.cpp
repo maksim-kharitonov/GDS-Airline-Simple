@@ -3,8 +3,10 @@
 #include "../lib/tinyxml.h"
 
 namespace core {
-AmadeusGDS::AmadeusGDS() {
-  _httpClient = new AmadeusHttpClient("haritonov", 8888);
+AmadeusGDS::AmadeusGDS(map<string, string> _param) : BaseGDS(_param) {
+  string hostname = _param["hostname"];
+  int port = stoi(_param["port"]);
+  _httpClient = new AmadeusHttpClient(hostname, port);
 }
 AmadeusGDS::~AmadeusGDS() { delete _httpClient; }
 
@@ -13,7 +15,8 @@ string AmadeusGDS::Say(string &s) {
   return result;
 }
 
-string AmadeusGDS::Search(string &searchString) {
+list<FlightOffer> AmadeusGDS::Search(string &searchString) {
+  list<FlightOffer> result;
   string request = "/search";
   string response = _httpClient->get(request);
 
@@ -22,8 +25,6 @@ string AmadeusGDS::Search(string &searchString) {
 
   TiXmlElement *rootElement = doc.RootElement();
 
-  ostringstream out;
-  out << "AVAILABLE FLIGHTS:" << endl << "---------------------------" << endl;
   int i = 0;
   if (NULL != rootElement) {
     TiXmlElement *pricingRoute =
@@ -93,14 +94,14 @@ string AmadeusGDS::Search(string &searchString) {
         }
 
         FlightOffer offer = offerBuilder.build();
-        out << offer;
+        result.push_back(offer);
 
         variant = variant->NextSiblingElement("variant");
       }
     }
   }
 
-  return out.str();
+  return result;
 }
 
 string AmadeusGDS::Hold(string &offerId) {

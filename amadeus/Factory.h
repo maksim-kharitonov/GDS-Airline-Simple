@@ -8,4 +8,4 @@
 
 using namespace std;
 
-CEXTERN Amadeus_API core::BaseGDS *__cdecl CreateGDS();
+CEXTERN Amadeus_API core::BaseGDS *__cdecl CreateGDS(map<string,string> _param);

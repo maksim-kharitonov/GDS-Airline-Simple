@@ -37,7 +37,10 @@ Command::Command() {
     _gdsModulesStrings = _config->getSection("GDS_MODULE_LIST");
     for (auto it = _gdsModulesStrings.cbegin(); it != _gdsModulesStrings.cend();
          ++it) {
-      _gdsModuleImplementations[it->first] = new Gds(it->second.c_str());
+      string moduleName = it->first;
+      string moduleDll = it->second;
+      _gdsModuleImplementations[moduleName] =
+          new Gds(moduleDll.c_str(), _config->getSection(tools::uppercase_copy(moduleName)));
     }
   }
 }
@@ -138,10 +141,19 @@ int SearchCommand::execute() {
   if (gds == "") {
     for (auto it = _gdsModuleImplementations.cbegin();
          it != _gdsModuleImplementations.cend(); ++it) {
-      cout << it->second->Search(_paramString) << endl;
+      list<FlightOffer> offers = it->second->Search(_paramString);
+      for (list<FlightOffer>::iterator offer = offers.begin();
+           offer != offers.end(); ++offer) {
+        cout << *offer << endl;
+      }
     }
   } else {
-    cout << _gdsModuleImplementations[gds]->Search(_paramString) << endl;
+    list<FlightOffer> offers =
+        _gdsModuleImplementations[gds]->Search(_paramString);
+    for (list<FlightOffer>::iterator offer = offers.begin();
+         offer != offers.end(); ++offer) {
+      cout << *offer << endl;
+    }
   }
 
   return 0;
