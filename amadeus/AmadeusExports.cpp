@@ -1,6 +1,7 @@
 #include "AmadeusExports.h"
 //прописал, чтобы Visual Studio не ругалась
 #include "../lib/tinyxml.h"
+#include "../lib/Colors.h"
 
 namespace core {
 AmadeusGDS::AmadeusGDS(map<string, string> _param) : BaseGDS(_param) {
@@ -122,12 +123,15 @@ Reservation *AmadeusGDS::Book() {
   if (_holdedOffer) {
     Reservation *resPtr = dynamic_cast<Reservation *>(_holdedOffer);
     if (resPtr != nullptr) {
-      cout << "Already has reservation in status " << resPtr->status << endl;
+      cerr << BOLD(FRED("Already has reservation in status ")) << resPtr->status << endl;
       return resPtr;
     } else {
       string request = "/book?id=" + _holdedOffer->uuid;
       string result = _httpClient->get(request);
-      Reservation *rs = new Reservation(*_holdedOffer, "AABBCC", "BOOKED");
+
+      Reservation *rs = new Reservation(*_holdedOffer);
+      rs->pnr = "AABBCC";
+      rs->status = "BOOKED";
       _holdedOffer = rs;
       return rs;
     }
@@ -137,9 +141,34 @@ Reservation *AmadeusGDS::Book() {
 }
 
 Reservation *AmadeusGDS::Ticket(string &pnr) {
-  string request = "/ticket";
-  string result = _httpClient->get(request);
-  return NULL;
+  if (_holdedOffer) {
+    Reservation *resPtr = dynamic_cast<Reservation *>(_holdedOffer);
+    if (resPtr == nullptr) {
+      cerr << BOLD(FRED("Offer is not booked")) << endl;
+      return NULL;
+    }
+    if (resPtr->pnr != pnr) {
+      cerr << BOLD(FRED("Offer for target PNR is not holded")) << endl;
+      return NULL;
+    }
+    if (!resPtr->tickets.empty()) {
+      cerr << BOLD(FRED("Offer already has tickets")) << endl;
+      return NULL;
+    }
+    if (resPtr->status != "BOOKED") {
+      cerr << BOLD(FRED("Offer is not booked")) << endl;
+      return NULL;
+    } else {
+      string request = "/ticket";
+      string result = _httpClient->get(request);
+
+      resPtr->tickets["1234567890"] = "OK";
+      resPtr->status = "TKT";
+      return resPtr;
+    }
+  } else {
+    return NULL;
+  }
 }
 
 map<string, FlightOffer> AmadeusGDS::_searchResult;

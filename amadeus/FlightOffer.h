@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <map>
 using namespace std;
 
 struct FlightOffer {
@@ -145,8 +146,27 @@ struct Reservation : public FlightOffer {
   ~Reservation(){};
   string pnr;
   string status;
-  Reservation(FlightOffer const &offer, const string &pnr, const string &status)
-      : FlightOffer(offer), pnr(pnr), status(status){};
+  map<string, string> tickets; //номер бланка билета -> статус билета
+  Reservation(FlightOffer const &offer, const string &pnr, const string &status, map<string,string> tickets)
+      : FlightOffer(offer), pnr(pnr), status(status), tickets(tickets){};
+  Reservation(FlightOffer const &offer) : FlightOffer(offer){};
+
+  class Builder;
+};
+
+class Reservation::Builder {
+  string pnr;
+  string status;
+  map<string, string> tickets;
+  FlightOffer offer;
+
+ public:
+  Builder(FlightOffer offer) : offer(offer), pnr("---"), status("NEW"){};
+  Builder &setPnr(const string &pnr);
+  Builder &setStatus(const string &status);
+  Builder &addTicket(const string &bso, const string &status);
+
+  Reservation build();
 };
 
 FLIGHT_OFFER_API ostream &operator<<(ostream &stream,

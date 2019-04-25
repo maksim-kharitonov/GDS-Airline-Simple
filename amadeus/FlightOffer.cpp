@@ -2,6 +2,14 @@
 
 std::ostream &operator<<(ostream &stream, const Reservation &reservation) {
   stream << "PNR: " << reservation.pnr << " " << reservation.status << endl;
+  if (!reservation.tickets.empty()) {
+    stream << "TICKETS:" << endl;
+    for (auto ticket = reservation.tickets.cbegin();
+         ticket != reservation.tickets.cend();
+         ++ticket) {
+      stream << ticket->first << " " << ticket->second << endl;
+    }
+  }
   stream << static_cast<const FlightOffer &>(reservation) << endl;
   return stream;
 }
@@ -155,4 +163,24 @@ string FlightOffer::toString() {
   ostringstream out;
   out << this;
   return out.str();
+}
+
+Reservation::Builder &Reservation::Builder::setPnr(const string &pnr) {
+  this->pnr = pnr;
+  return *this;
+}
+
+Reservation::Builder &Reservation::Builder::setStatus(const string &status) {
+  this->status = status;
+  return *this;
+}
+
+Reservation::Builder &Reservation::Builder::addTicket(const string &bso,
+                                         const string &status) {
+  this->tickets[bso] = status;
+  return *this;
+}
+
+Reservation Reservation::Builder::build() {
+  return Reservation(offer, pnr, status, tickets);
 }

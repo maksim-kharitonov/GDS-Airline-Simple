@@ -2,13 +2,22 @@
 
 std::ostream &operator<<(ostream &stream, const Reservation &reservation) {
   stream << "PNR: " << reservation.pnr << " " << reservation.status << endl;
+  if (!reservation.tickets.empty()) {
+    stream << "TICKETS:" << endl;
+    for (auto ticket = reservation.tickets.cbegin();
+         ticket != reservation.tickets.cend();
+         ++ticket) {
+      stream << ticket->first << " " << ticket->second << endl;
+    }
+  }
   stream << static_cast<const FlightOffer &>(reservation) << endl;
   return stream;
 }
 
-
-std::ostream &__cdecl operator << (std::ostream & stream, const FlightOffer &offer) {
-  stream << offer.gds << " " << offer.uuid << " " << offer.generalCarrier << endl;
+std::ostream &__cdecl operator<<(std::ostream &stream,
+                                 const FlightOffer &offer) {
+  stream << offer.gds << " " << offer.uuid << " " << offer.generalCarrier
+         << endl;
 
   for (std::vector<FlightOffer::OriginDestination>::const_iterator flight =
            offer.flights.begin();
@@ -22,16 +31,13 @@ std::ostream &__cdecl operator << (std::ostream & stream, const FlightOffer &off
   return stream;
 }
 
-std::ostream &__cdecl operator
-    << (std::ostream & stream,
-                         const FlightOffer::Price &price) {
+std::ostream &__cdecl operator<<(std::ostream &stream,
+                                 const FlightOffer::Price &price) {
   return stream << price.amount << " " << price.currency;
 }
 
-std::ostream &__cdecl operator
-    << (
-    ostream &stream,
-                    const FlightOffer::OriginDestination &originDestination) {
+std::ostream &__cdecl operator<<(
+    ostream &stream, const FlightOffer::OriginDestination &originDestination) {
   return stream << originDestination.marketingCarrier << " "
                 << originDestination.departurePort << " "
                 << "[" << originDestination.departureTime << "]"
@@ -153,9 +159,28 @@ FlightOffer::OriginDestination::Builder::setBasicFareCode(
   return *this;
 }
 
-string FlightOffer::toString() { 
-	ostringstream out;
-	out << this;
-    return out.str();
+string FlightOffer::toString() {
+  ostringstream out;
+  out << this;
+  return out.str();
 }
 
+Reservation::Builder &Reservation::Builder::setPnr(const string &pnr) {
+  this->pnr = pnr;
+  return *this;
+}
+
+Reservation::Builder &Reservation::Builder::setStatus(const string &status) {
+  this->status = status;
+  return *this;
+}
+
+Reservation::Builder &Reservation::Builder::addTicket(const string &bso,
+                                         const string &status) {
+  this->tickets[bso] = status;
+  return *this;
+}
+
+Reservation Reservation::Builder::build() {
+  return Reservation(offer, pnr, status, tickets);
+}

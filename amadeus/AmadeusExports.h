@@ -2,6 +2,7 @@
 #include "AmadeusHttpClient.h"
 #include "GdsExports.h"
 #include "tinyxml.h"
+#include "Colors.h"
 #include <iostream>
 #include <sstream>
 #include "FlightOffer.h"

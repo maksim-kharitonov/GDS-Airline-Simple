@@ -196,6 +196,7 @@ int BookCommand::execute() {
       cout << BOLD(FGRN("Offer book: SUCCESS")) << endl
            << "------------------------" << endl;
       cout << *reservation << endl;
+      _holdedOffer = reservation;
     } else {
       throw CommandException("Booking command exception. Hold offer again or try later", "Data exception");
     }
@@ -204,14 +205,31 @@ int BookCommand::execute() {
 }
 
 int TicketCommand::execute() {
-  string gds = tools::uppercase_copy(_modifier);
-  if (gds == "") {
-    for (auto it = _gdsModuleImplementations.cbegin();
-         it != _gdsModuleImplementations.cend(); ++it) {
-      cout << it->second->Ticket(_paramString) << endl;
-    }
+  if (_paramString == "") {
+    throw CommandException("Command format: BOOK <PNR>", "format_exception");
+  } else if (!_holdedOffer) {
+    throw CommandException("Holded offer not found; please hold first",
+                           "Data exception");
   } else {
-    cout << _gdsModuleImplementations[gds]->Ticket(_paramString) << endl;
+    Reservation *resPtr = dynamic_cast<Reservation *>(_holdedOffer);
+    if (resPtr == nullptr) {
+      throw CommandException("Offer was not booked.",
+                             "Data exception");
+    }
+
+    Reservation *reservation =
+        _gdsModuleImplementations[resPtr->gds]->Ticket(_paramString);
+    if (reservation) {
+      //_holdedOffer = reservation;
+      cout << BOLD(FGRN("Offer ticket: SUCCESS")) << endl
+           << "------------------------" << endl;
+      cout << *reservation << endl;
+      _holdedOffer = reservation;
+    } else {
+      throw CommandException(
+          "Ticket command exception. Hold offer again or try later",
+          "Data exception");
+    }
   }
   return 0;
 }
