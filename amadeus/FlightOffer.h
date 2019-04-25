@@ -17,6 +17,7 @@ using namespace std;
 struct FlightOffer {
  public:
   FlightOffer(){};
+  virtual ~FlightOffer(){};
   //FlightOffer(FlightOffer const &src);
   class Builder;
   struct Price {
@@ -141,6 +142,7 @@ ostream &operator<<(ostream &stream,
 ostream &operator<<(ostream &stream, const FlightOffer::Price &price);
 
 struct Reservation : public FlightOffer {
+  ~Reservation(){};
   string pnr;
   string status;
   Reservation(FlightOffer const &offer, const string &pnr, const string &status)

@@ -120,11 +120,17 @@ FlightOffer *AmadeusGDS::Hold(string &offerId) {
 
 Reservation *AmadeusGDS::Book() {
   if (_holdedOffer) {
-    string request = "/book?id=" + _holdedOffer->uuid;
-    string result = _httpClient->get(request);
-    Reservation *rs = new Reservation(*_holdedOffer, "AABBCC","BOOKED");
-    _holdedOffer = rs;
-    return rs;
+    Reservation *resPtr = dynamic_cast<Reservation *>(_holdedOffer);
+    if (resPtr != nullptr) {
+      cout << "Already has reservation in status " << resPtr->status << endl;
+      return resPtr;
+    } else {
+      string request = "/book?id=" + _holdedOffer->uuid;
+      string result = _httpClient->get(request);
+      Reservation *rs = new Reservation(*_holdedOffer, "AABBCC", "BOOKED");
+      _holdedOffer = rs;
+      return rs;
+    }
   } else {
     return NULL;
   }

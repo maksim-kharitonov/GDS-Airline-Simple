@@ -17,7 +17,7 @@ using namespace std;
 struct FlightOffer {
  public:
   FlightOffer(){};
-  //FlightOffer(FlightOffer const &src);
+  virtual ~FlightOffer(){};
   class Builder;
   struct Price {
     double amount;
@@ -63,7 +63,7 @@ struct FlightOffer {
   FlightOffer(const string gds, const string uuid, const string generalCarrier,
               const Price totalPrice, const vector<OriginDestination> flights)
       : gds(gds),
-		uuid(uuid),
+        uuid(uuid),
         generalCarrier(generalCarrier),
         totalPrice(totalPrice),
         flights(flights){};
@@ -78,7 +78,12 @@ class FlightOffer::Builder {
   vector<OriginDestination> flights;
 
  public:
-  Builder() : gds("---"), uuid("---"), generalCarrier("---"), totalPrice(), flights() {}
+  Builder()
+      : gds("---"),
+        uuid("---"),
+        generalCarrier("---"),
+        totalPrice(),
+        flights() {}
 
   Builder &setGds(const string &gds);
   Builder &setUuid(const string &uuid);
@@ -129,15 +134,14 @@ class FlightOffer::OriginDestination::Builder {
   FlightOffer::OriginDestination build();
 };
 
-FLIGHT_OFFER_API ostream &operator<<(
-    ostream &stream, const FlightOffer &flightOffer);
-ostream & operator<<(
-    ostream &stream, const FlightOffer::OriginDestination &originDestination);
-ostream & operator<<(
-    ostream &stream, const FlightOffer::Price &price);
-
+FLIGHT_OFFER_API ostream &operator<<(ostream &stream,
+                                     const FlightOffer &flightOffer);
+ostream &operator<<(ostream &stream,
+                    const FlightOffer::OriginDestination &originDestination);
+ostream &operator<<(ostream &stream, const FlightOffer::Price &price);
 
 struct Reservation : public FlightOffer {
+  ~Reservation(){};
   string pnr;
   string status;
   Reservation(FlightOffer const &offer, const string &pnr, const string &status)
@@ -146,6 +150,5 @@ struct Reservation : public FlightOffer {
 
 FLIGHT_OFFER_API ostream &operator<<(ostream &stream,
                                      const Reservation &reservation);
-
 
 #endif  // !FLIGHTOFFER_H
