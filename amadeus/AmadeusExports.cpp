@@ -21,7 +21,7 @@ list<FlightOffer> AmadeusGDS::Search(string &searchString) {
   delete _holdedOffer;
 
   list<FlightOffer> result;
-  string request = "/search";
+  string request = "/search?" + searchString;
   string response = _httpClient->get(request);
 
   TiXmlDocument doc;

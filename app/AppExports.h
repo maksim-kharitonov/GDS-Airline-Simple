@@ -29,7 +29,4 @@
 #include <string>
 #include <time.h>
 
-void CallDLLByExplicitLinking(string s, LPCSTR dllName);
-int executeCommand(Command &command);
-
 #endif // AppExports_h

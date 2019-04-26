@@ -1,0 +1,4 @@
+D:/PROJECT/GIT/cpp/GDS-Airline-Simple/_install/app.exe
+D:/PROJECT/GIT/cpp/GDS-Airline-Simple/_install/conf/config.ini
+D:/PROJECT/GIT/cpp/GDS-Airline-Simple/_install/sirena.dll
+D:/PROJECT/GIT/cpp/GDS-Airline-Simple/_install/amadeus.dll

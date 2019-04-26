@@ -1,0 +1,2 @@
+#pragma code_page(65001)
+2 /* CREATEPROCESS_MANIFEST_RESOURCE_ID */ 24 /* RT_MANIFEST */ "D:/PROJECT/GIT/cpp/GDS-Airline-Simple/out/build/x64-Debug/sirena/CMakeFiles/sirena.dir/embed.manifest"

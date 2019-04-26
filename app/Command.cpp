@@ -142,18 +142,48 @@ int ModuleCommad::execute() {
 int SearchCommand::execute() {
   _holdedOffer = NULL;
   string gds = tools::uppercase_copy(_modifier);
+
+  regex expr(
+      "^[\\t ]*"
+      "([A-Za-z]{3})"
+      "[\\t ]*"
+      "([A-Za-z]{3})"
+      "[\\t ]*"
+      "((?:0[1-9]|[12][0-9]|3[01])"
+      "[\\t ]*"
+      "(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)"
+      "[\\t ]*"
+      "[0-9][0-9]"
+      ")$",
+      regex_constants::icase);
+  smatch sm;
+  bool found = regex_search(_paramString, sm, expr);
+  if (!found) {
+    throw CommandException(
+        "Command format: SEARCH PR1 PR2 DD MON YY \\ <CMD_MODIFIER>",
+        "format_exception");
+  }
+
+  stringstream reqstream;
+  for (sregex_iterator it(_paramString.begin(), _paramString.end(), expr),
+       itEnd;
+       it != itEnd; ++it) {
+    reqstream << "prt1=" << tools::uppercase_copy((*it)[1]) << "&prt2=" << tools::uppercase_copy((*it)[2])
+              << "&date=" << (*it)[3];
+  }
+  string request = reqstream.str();
+
   if (gds == "") {
     for (auto it = _gdsModuleImplementations.cbegin();
          it != _gdsModuleImplementations.cend(); ++it) {
-      list<FlightOffer> offers = it->second->Search(_paramString);
+      list<FlightOffer> offers = it->second->Search(request);
       for (list<FlightOffer>::iterator offer = offers.begin();
            offer != offers.end(); ++offer) {
         cout << *offer << endl;
       }
     }
   } else {
-    list<FlightOffer> offers =
-        _gdsModuleImplementations[gds]->Search(_paramString);
+    list<FlightOffer> offers = _gdsModuleImplementations[gds]->Search(request);
     for (list<FlightOffer>::iterator offer = offers.begin();
          offer != offers.end(); ++offer) {
       cout << *offer << endl;
@@ -198,7 +228,9 @@ int BookCommand::execute() {
       cout << *reservation << endl;
       _holdedOffer = reservation;
     } else {
-      throw CommandException("Booking command exception. Hold offer again or try later", "Data exception");
+      throw CommandException(
+          "Booking command exception. Hold offer again or try later",
+          "Data exception");
     }
   }
   return 0;
@@ -213,8 +245,7 @@ int TicketCommand::execute() {
   } else {
     Reservation *resPtr = dynamic_cast<Reservation *>(_holdedOffer);
     if (resPtr == nullptr) {
-      throw CommandException("Offer was not booked.",
-                             "Data exception");
+      throw CommandException("Offer was not booked.", "Data exception");
     }
 
     Reservation *reservation =
