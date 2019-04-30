@@ -63,7 +63,7 @@ GDS>EXIT
 
 ```
 GDS> SEARCH MOW LED 01DEC19
-GDS> HOLD 2
+GDS> HOLD 2 \ AMADEUS
 GDS> BOOK
 GDS> TICKET <ПОЛУЧЕННЫЙ НОМЕР БРОНИ>
 ```
