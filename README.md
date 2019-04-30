@@ -13,33 +13,45 @@
 
 ## Описание
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+В данном проекте выплонено 
 
 ### Сборка
 
-Проект написан для cmake. Для сборки проекта под MS Windows для VS 2017:
+Проект написан для cmake. Для сборки проекта под MS Windows для VS 2017. Для компиляции используется версия компилятора C++11. 
+Текущая реализация существенно использует системные библиотеки API MS Windows.
 
-```
-Give examples
-```
 
 ### Использование
 
 Допустимые консольные команды:
 
 ```
-Give the example
+GDS>HELP
 ```
 
-And repeat
-
 ```
-until finished
+GDS>SEARCH <CITY1> <CITY2> <DD><MON><YY> \ <GDS>
 ```
 
+```
+GDS>HOLD <OFFER_ID>
+```
+
+```
+GDS>BOOK
+```
+
+```
+GDS>TICKET <PNR>
+```
 ## Тестирование
 
-Explain how to run the automated tests for this system
+```
+GDS> SEARCH MOW LED 01DEC19
+GDS> HOLD 2
+GDS> BOOK
+GDS> TICKET <ПОЛУЧЕННЫЙ НОМЕР БРОНИ>
+```
 
 
 ## Версия
